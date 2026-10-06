@@ -89,7 +89,7 @@ const spin = () => {
 
 //in the spin function the constant reels is basically displaying columns in a pattern of the rows, now creating a function that basically keeps the format same but now is actually showing rows
 const transpose = (reels) => {
-    const rows = [];
+    const rows = []; // [[],[],[]]
     for (let i = 0; i < ROWS; i++) {
         rows.push([]);
         for (let j = 0; j < COLS; j++) {
@@ -101,18 +101,63 @@ const transpose = (reels) => {
 
 //5. showing the user what they actually spun
 const printRows = (rows) => {
-    for (const rows of rows) {
+    for (const row of rows) {
         let rowString = " ";
-        for (const [i, symbol] of rows.entries()) {
+        for (const [i, symbol] of row.entries()) {
             rowString += symbol;
+            if(i!= row.length-1){
+                rowString += " | ";
+            }
+        }
+        console.log(rowString);
+    }
+}
+
+//6. check if the user won now
+const getWinnings= (rows, bet, lines) => {
+    let winnings = 0;
+    for(let row = 0 ; row < lines; row++){
+        const symbols = rows[row];
+        let allSame = true;
+        for(const symbol of symbols){
+            if(symbol != symbols[0]){
+                allSame = false;
+                break;
+            }
+        }
+        if(allSame){
+            winnings+= bet*SYMBOLS_VALUES[symbols[0]];
+        }
+    }
+    return winnings;
+} 
+
+//7. creating a loop for the game so the user can play untill deposit=0
+const game = () =>{
+    let balance = deposit();
+    while(true){
+        console.log("You have balance of : $" + balance);
+        const numberOfLines = getNumberOfLines();
+        const bet = getBet(balance, numberOfLines);
+        balance -= bet*numberOfLines;
+        const reels = spin();
+        const rows = transpose(reels);
+        console.log(reels);
+        console.log(rows);
+        printRows(rows);
+        const winnings = getWinnings(rows, bet, numberOfLines);
+        balance += winnings;
+        console.log("You Won, $" + winnings.toString());
+
+        if(balance<=0){
+            console.log("Insufficent balance!");
+            break;
+        }
+        const playAgain = prompt("Want to play again? (y/n)?")
+        if(playAgain != 'y'){
+            break;
         }
     }
 }
 
-let balance = deposit();
-const numberOfLines = getNumberOfLines();
-const bet = getBet(balance);
-const reels = spin();
-const rows = transpose(reels);
-console.log(reels);
-console.log(rows);
+game();
