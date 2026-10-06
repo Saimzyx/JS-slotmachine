@@ -99,6 +99,16 @@ const transpose = (reels) => {
     return rows;
 }
 
+//5. showing the user what they actually spun
+const printRows = (rows) => {
+    for (const rows of rows) {
+        let rowString = " ";
+        for (const [i, symbol] of rows.entries()) {
+            rowString += symbol;
+        }
+    }
+}
+
 let balance = deposit();
 const numberOfLines = getNumberOfLines();
 const bet = getBet(balance);
